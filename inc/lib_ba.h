@@ -46,6 +46,14 @@ extern "C" {
 #error Wrong BA_CHECK_OVERFLOW value. Please define in your code the BA_CHECK_OVERFLOW to 0 (no overflow check) or to 1 (overflow check exist)
 #endif
 
+#ifndef BA_CRITICAL_ENTER
+#error No BA_CRITICAL_ENTER() defined. Please define it in your code. For non-multitreading evironment you may define it as <#define BA_CRITICAL_ENTER() ;>
+#endif // !BA_CRITICAL_ENTER
+
+#ifndef BA_CRITICAL_EXIT
+#error No BA_CRITICAL_EXIT() defined. Please define it in your code. For non-multitreading evironment you may define it as <#define BA_CRITICAL_EXIT() ;>
+#endif // !BA_CRITICAL_EXIT
+
 #ifndef NULL
 #define NULL                ((void *) 0)
 #endif

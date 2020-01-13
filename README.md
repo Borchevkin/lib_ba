@@ -22,6 +22,11 @@ For test used the BA_TEST macro (check out ***project.yml***)
 
 #define BA_CHECK_OVERFLOW       1           // check overflow option. 0 - no check, 1 - check enabled  
 
+// For non-multithreading environments you can set theese macroses as ;
+// For RTOSes - it's you own charge how to set theese
+#define BA_CRITICAL_ENTER()     ;
+#define BA_CRITICAL_EXIT()      ;
+
 ...
 
 void * allocBlock = NULL;
@@ -59,6 +64,16 @@ baErr = BA_Free(&allocBlock);
 ```
 
 For additional info please check tests and ***lib_ba.c***
+
+## Multi-thread environment notes
+
+For proper working with this block allocator you should set the following macroses to you own critical section routines. It may be a mutex , a semaphore, IRQ disable/enable, context switching disable/enable, etc.
+
+```C
+// For RTOSes - it's you own charge how to set theese
+#define BA_CRITICAL_ENTER()     ;
+#define BA_CRITICAL_EXIT()      ;
+```
 
 ## Feedback
 

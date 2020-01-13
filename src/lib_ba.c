@@ -2,7 +2,7 @@
 
 // Static varivables
 
-static ba_block_t __baPool[BA_POOL_SIZE];
+volatile static ba_block_t __baPool[BA_POOL_SIZE];
 
 // Private functions declaration
 
@@ -95,11 +95,15 @@ static ba_err_t __BA_CheckBlockOverflow(void * data, uint16_t blockSize)
  */
 ba_err_t BA_Init(void)
 {
+    BA_CRITICAL_ENTER();
+
     for (uint16_t i = 0; i < BA_POOL_SIZE; i++)
     {
         memset(__baPool[i].data, BA_DEFAULT_BYTE, BA_BLOCK_SIZE);
         __baPool[i].usedPtr = NULL;
     } 
+
+    BA_CRITICAL_EXIT();
 
     return BA_ERR_OK;
 }
@@ -119,11 +123,12 @@ ba_err_t BA_Alloc(void ** destPtr)
 {
     if (destPtr == NULL) return BA_ERR_PARAM;
     
-    *destPtr = NULL;
-
     ba_err_t err = BA_ERR_OK;
     uint16_t idx = 0;
 
+    BA_CRITICAL_ENTER();
+    
+    *destPtr = NULL;
     err = __BA_GetFirstFreeBlockIdx(&idx);
 
     if (err == BA_ERR_OK)
@@ -134,6 +139,8 @@ ba_err_t BA_Alloc(void ** destPtr)
         err = __BA_CheckBlockOverflow(&__baPool[idx].data, BA_BLOCK_SIZE);
 #endif
     }
+
+    BA_CRITICAL_EXIT();
     
     return err;
 }
@@ -154,6 +161,8 @@ ba_err_t BA_Free(void ** destPtr)
     ba_err_t err = BA_ERR_OK;
     uint16_t idx = 0;
 
+    BA_CRITICAL_ENTER();
+
     err = __BA_FindBlockIdxByUsedPtr(&idx, destPtr);
 
     if (err == BA_ERR_OK)
@@ -162,6 +171,8 @@ ba_err_t BA_Free(void ** destPtr)
         __baPool[idx].usedPtr = NULL;
         *destPtr = NULL;
     }
+
+    BA_CRITICAL_EXIT();
 
     return err;
 }
@@ -175,6 +186,8 @@ uint16_t BA_GetFreeBlocksCount(void)
 {
     uint16_t ret = 0;
 
+    BA_CRITICAL_ENTER();
+
     for (uint16_t i = 0; i < BA_POOL_SIZE; i++)
     {
         if (__baPool[i].usedPtr == NULL)
@@ -182,6 +195,8 @@ uint16_t BA_GetFreeBlocksCount(void)
             ret++;
         }
     }
+
+    BA_CRITICAL_EXIT();
 
     return ret;
 }
@@ -204,6 +219,8 @@ ba_err_t BA_GetBlockMaxUsage(void ** destPtr, uint16_t * maxUsage)
     ba_err_t err = BA_ERR_OK;
     uint16_t idx = 0;
 
+    BA_CRITICAL_ENTER();
+
     err = __BA_FindBlockIdxByUsedPtr(&idx, destPtr);
 
     if (err == BA_ERR_OK)
@@ -219,6 +236,8 @@ ba_err_t BA_GetBlockMaxUsage(void ** destPtr, uint16_t * maxUsage)
             }
         } 
     }
+
+    BA_CRITICAL_EXIT();
 
     return err;
 }

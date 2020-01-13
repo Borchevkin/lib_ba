@@ -10,6 +10,9 @@ extern "C" {
 
 #define BA_CHECK_OVERFLOW       1           // check overflow option. 0 - no check, 1 - check enabled  
 
+#define BA_CRITICAL_ENTER()     ;
+#define BA_CRITICAL_EXIT()      ;
+
 #ifdef __cplusplus
 }
 #endif
